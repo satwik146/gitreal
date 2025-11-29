@@ -33,6 +33,9 @@ def extract_github_details(url):
     """
     Extracts owner, repo, AND branch from URL.
     """
+    if not url:
+        return None, None, None
+        
     # Clean up
     clean = url.replace("https://", "").replace("http://", "").replace("github.com/", "")
     parts = clean.split("/")
@@ -74,18 +77,49 @@ async def analyze_portfolio(
         
         target_url = github_url
         if not target_url or target_url == "null":
-            target_url = "https://github.com/torvalds/linux" 
+            # Attempt to find in resume
+            # Look for github.com/username/repo
+            match = re.search(r"github\.com/([a-zA-Z0-9-_]+)/([a-zA-Z0-9-_]+)", resume_text)
+            if match:
+                target_url = f"https://{match.group(0)}"
+                print(f"   🕵️‍♀️ Found GitHub URL in Resume: {target_url}")
+            else:
+                target_url = None
 
-        owner, repo, branch = extract_github_details(target_url)
-        
-        if owner and repo:
-            print(f"   💻 Target: {owner}/{repo} (Branch: {branch or 'Auto'})")
-            code_context = ingest_github.fetch_repo_content(owner, repo, branch)
+        code_context = ""
+        if target_url:
+            owner, repo, branch = extract_github_details(target_url)
+            if owner and repo:
+                print(f"   💻 Target: {owner}/{repo} (Branch: {branch or 'Auto'})")
+                code_context = ingest_github.fetch_repo_content(owner, repo, branch)
+            else:
+                code_context = "Error: Invalid URL extracted."
         else:
-            code_context = "Error: Invalid URL."
+            code_context = "No GitHub URL found in resume or provided."
+
+        if os.path.exists(temp_filename):
+            os.remove(temp_filename)
 
         analysis_json = brain.analyze_resume_vs_code(resume_text, code_context)
-        star_bullets = brain.generate_star_bullets(code_context)
+        
+        # Parse JSON to construct chat message
+        import json
+        try:
+            data = json.loads(analysis_json)
+            critique = "\n".join([f"- {x}" for x in data.get("project_critique", [])])
+            claims = "\n".join([f"- {x}" for x in data.get("false_claims", [])])
+            suggestions = "\n".join([f"- {x}" for x in data.get("resume_suggestions", [])])
+            
+            chat_msg = f"""**REAL WORLD CRITIQUE:**
+{critique}
+
+**FALSE CLAIMS / VERIFICATION:**
+{claims}
+
+**RESUME ADDITIONS:**
+{suggestions}"""
+        except:
+            chat_msg = "Analysis Complete. Check Dashboard for details."
 
         DB['current_user'] = {
             "resume": resume_text,
@@ -96,7 +130,7 @@ async def analyze_portfolio(
         return {
             "status": "success",
             "data": analysis_json,
-            "initial_chat": f"I've analyzed your code. Here are 3 STAR bullet points you should add immediately:\n\n{star_bullets}"
+            "initial_chat": chat_msg
         }
 
     except Exception as e:

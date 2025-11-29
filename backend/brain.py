@@ -29,46 +29,38 @@ def analyze_resume_vs_code(resume_text, code_context):
     prompt = f"""
     You are 'GitReal', a ruthless Senior Engineer.
     
-    TASK 1: Analyze the Candidate.
+    TASK: Analyze the Candidate's Resume against their Code.
     RESUME: {resume_text[:2000]}
     CODE: {code_context[:50000]}
 
-    OUTPUT JSON:
+    OUTPUT JSON (Strictly these 3 keys):
     {{
-        "matches": ["Skill A (Verified in file.py)", "Skill B"],
-        "missing_gems": ["Found Redis but not on resume", "Complex SQL detected"],
-        "red_flags": ["Hardcoded API Keys", "Spaghetti code in main.py"],
-        "summary": "Solid engineer, bad resume."
+        "project_critique": [
+            "Criticize the project compared to real-world/FAANG standards.",
+            "E.g. 'Code is monolithic, lacks microservices pattern.'",
+            "E.g. 'No unit tests found, risky for production.'"
+        ],
+        "false_claims": [
+            "Check Resume vs Repo for lies/exaggerations.",
+            "E.g. 'Resume says Expert in AWS, but no AWS config found.'",
+            "E.g. 'Claims CI/CD pipeline, but no .github/workflows.'"
+        ],
+        "resume_suggestions": [
+            "What SPECIFIC things should be added to the resume based on this code?",
+            "E.g. 'Add 'Multithreading' - found complex threading in main.c'",
+            "E.g. 'Highlight 'Optimization' - found custom memory allocator.'"
+        ]
     }}
     """
     try:
         response = json_model.generate_content(prompt)
         return response.text
     except Exception as e:
-        return json.dumps({"matches": [], "missing_gems": [], "red_flags": ["Error analyzing"], "summary": "System Error"})
-
-def generate_star_bullets(code_context):
-    """
-    Generates the opening 'STAR' analysis.
-    """
-    prompt = f"""
-    You are an Elite Resume Writer. I don't want advice. I want TEXT I can copy-paste.
-    
-    Analyze this code and generate 3 Bullet Points using the **STAR Method** (Situation, Task, Action, Result).
-    
-    RULES:
-    1. **NO INTRO/OUTRO**: Do not say "Here are your points". Just output the points.
-    2. **SPECIFICITY**: Mention specific libraries, algorithms, or architectures found in the code.
-    3. **IMPACT**: Estimate quantitative results (e.g. "Reduced latency by ~20%").
-    
-    CODE EVIDENCE:
-    {code_context[:50000]}
-    """
-    try:
-        response = model.generate_content(prompt)
-        return response.text
-    except:
-        return "Error generating bullets."
+        return json.dumps({
+            "project_critique": ["Error analyzing project."],
+            "false_claims": ["Could not verify claims."],
+            "resume_suggestions": ["System Error."]
+        })
 
 def generate_star_bullets(code_context):
     """
@@ -108,3 +100,28 @@ def generate_star_bullets(code_context):
         return response.text
     except Exception as e:
         return f"Error generating bullets: {str(e)}"
+
+def get_chat_response(history, message, context):
+    """
+    Handles the chat interaction.
+    """
+    chat = chat_model.start_chat(history=history)
+    
+    system_prompt = f"""
+    You are Morpheus from The Matrix.
+    You are talking to a candidate who wants to escape the simulation (get a job).
+    
+    CONTEXT:
+    {context}
+    
+    RULES:
+    1. Speak in metaphors about the Matrix, code, and reality.
+    2. Be direct and slightly cryptic but helpful.
+    3. Use the context provided to answer their questions about their code or resume.
+    """
+    
+    try:
+        response = chat.send_message(f"{system_prompt}\n\nUSER: {message}")
+        return response.text
+    except Exception as e:
+        return f"The Matrix is glitching... {str(e)}"
