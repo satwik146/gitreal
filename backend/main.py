@@ -21,6 +21,7 @@ app.add_middleware(
 )
 
 DB = {}
+REPO_CACHE = {}
 
 class ChatRequest(BaseModel):
     message: str
@@ -90,8 +91,16 @@ async def analyze_portfolio(
         if target_url:
             owner, repo, branch = extract_github_details(target_url)
             if owner and repo:
-                print(f"   💻 Target: {owner}/{repo} (Branch: {branch or 'Auto'})")
-                code_context = ingest_github.fetch_repo_content(owner, repo, branch)
+                cache_key = f"{owner}/{repo}/{branch}"
+                if cache_key in REPO_CACHE:
+                    print(f"   ⚡ Cache Hit: {cache_key}")
+                    code_context = REPO_CACHE[cache_key]
+                else:
+                    print(f"   💻 Target: {owner}/{repo} (Branch: {branch or 'Auto'})")
+                    code_context = ingest_github.fetch_repo_content(owner, repo, branch)
+                    # Cache if valid
+                    if code_context and len(code_context) > 100:
+                        REPO_CACHE[cache_key] = code_context
             else:
                 code_context = "Error: Invalid URL extracted."
         else:
@@ -149,10 +158,16 @@ async def add_repo_context(request: RepoRequest):
         if not owner or not repo:
              raise HTTPException(status_code=400, detail="Invalid GitHub URL")
         
-        print(f"   💻 Fetching: {owner}/{repo} (Branch: {branch or 'Default'})")
-        
-        # Pass the extracted branch to the scraper
-        code_context = ingest_github.fetch_repo_content(owner, repo, branch)
+        cache_key = f"{owner}/{repo}/{branch}"
+        if cache_key in REPO_CACHE:
+            print(f"   ⚡ Cache Hit: {cache_key}")
+            code_context = REPO_CACHE[cache_key]
+        else:
+            print(f"   💻 Fetching: {owner}/{repo} (Branch: {branch or 'Default'})")
+            # Pass the extracted branch to the scraper
+            code_context = ingest_github.fetch_repo_content(owner, repo, branch)
+            if code_context and len(code_context) >= 100:
+                REPO_CACHE[cache_key] = code_context
 
         if not code_context or len(code_context) < 100:
             return {"status": "error", "bullets": "⚠️ ACCESS DENIED: Repo is empty, Private, or Branch not found."}
@@ -166,6 +181,17 @@ async def add_repo_context(request: RepoRequest):
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+@app.post("/interview_start")
+async def start_interview():
+    user_data = DB.get('current_user')
+    if not user_data:
+        return {"status": "error", "message": "No data found."}
+    
+    # Generate the "Opening Shot"
+    question = brain.generate_interview_challenge(user_data['code'], user_data['analysis'])
+    
+    return {"status": "success", "question": question}
 
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
@@ -188,3 +214,14 @@ async def chat_endpoint(request: ChatRequest):
     response_text = brain.get_chat_response(gemini_history, request.message, context_summary)
     
     return {"response": response_text}
+
+@app.post("/generate_resume")
+async def generate_resume_endpoint():
+    user_data = DB.get('current_user')
+    if not user_data:
+        return {"response": "⚠️ ERROR: No data found."}
+
+    # Call the new brain function
+    new_resume = brain.generate_ats_resume(user_data['resume'], user_data['code'])
+    
+    return {"status": "success", "resume": new_resume}

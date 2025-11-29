@@ -125,3 +125,59 @@ def get_chat_response(history, message, context):
         return response.text
     except Exception as e:
         return f"The Matrix is glitching... {str(e)}"
+
+def generate_interview_challenge(code_context, analysis_json):
+    """
+    Generates a tough technical question based on the code's weak points.
+    """
+    prompt = f"""
+    You are 'GitReal', a skeptcial Technical Interviewer.
+    You have analyzed this candidate's code and found some issues.
+    
+    ANALYSIS SUMMARY:
+    {analysis_json}
+    
+    RAW CODE SEGMENT:
+    {code_context[:20000]}
+
+    YOUR TASK:
+    Generate ONE hard, specific technical interview question to test if the candidate actually wrote this code or understands it.
+    - Pick a specific file or function from the code.
+    - Ask why they chose that specific implementation over a better alternative.
+    - Be direct and intimidating.
+    
+    OUTPUT:
+    Just the question. No greetings.
+    """
+    try:
+        response = model.generate_content(prompt)
+        return response.text
+    except:
+        return "Explain the architecture of your main API handler. Why is it structured this way?"
+
+def generate_ats_resume(resume_text, code_context):
+    """
+    Rewrites the ENTIRE resume to be ATS compliant, injecting code evidence.
+    """
+    prompt = f"""
+    You are an ATS (Applicant Tracking System) Optimization Engine.
+    
+    INPUT DATA:
+    1. OLD RESUME: {resume_text[:2000]}
+    2. CODE EVIDENCE: {code_context[:50000]}
+
+    YOUR MISSION:
+    Rewrite the candidate's resume completely.
+    1. **Structure:** Use standard ATS headers (SUMMARY, EXPERIENCE, PROJECTS, SKILLS, EDUCATION). No columns.
+    2. **Evidence Injection:** Replace generic bullet points in the 'Projects' or 'Experience' section with specific technical details found in the CODE EVIDENCE (e.g., specific libraries, architecture patterns).
+    3. **Keywords:** Ensure high-value tech keywords from the code (e.g., "Redis", "FastAPI", "AsyncIO") are included in the SKILLS section.
+    4. **Tone:** Action-oriented, professional, quantified.
+
+    OUTPUT FORMAT:
+    Markdown text. Ready to copy-paste.
+    """
+    try:
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        return f"Error generating resume: {str(e)}"
