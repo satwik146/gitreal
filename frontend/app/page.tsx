@@ -97,18 +97,16 @@ body {
   width: 100%;
   display: flex;
   justify-content: center;
-  gap: 0px; /* Reduced gap */
+  gap: 0px; 
   align-items: center;
-  /* Ensure container doesn't block clicks if needed, though text is pointer-events: none usually */
   pointer-events: none;
 }
 
 .glitch {
   position: relative;
-  color: white; /* Base color */
+  color: white; 
   mix-blend-mode: hard-light;
   background: black;
-  /* Equalize box sizes */
   width: 100px;
   text-align: center;
   display: inline-block;
@@ -122,7 +120,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: black; /* Opaque background masks the original */
+  background: black;
 }
 
 .glitch::before {
@@ -135,7 +133,7 @@ body {
   left: -2px;
   text-shadow: -1px 0 blue;
   animation: noise-anim 2s infinite linear alternate-reverse;
-  animation-delay: 1s; /* Offset for variation */
+  animation-delay: 1s; 
 }
 
 @keyframes noise-anim {
@@ -147,30 +145,8 @@ body {
   100% { clip-path: inset(58% 0 43% 0); }
 }
 
-/* Specific Colors for GIT and REAL */
-.text-git {
-  color: #FF1744;
-}
-.text-real {
-  color: #00FFFF;
-}
-
-/* Override shadows for the glitch layers to match the text color roughly or keep red/blue as requested? 
-   User code had red/blue hardcoded. I will keep red/blue as per user snippet. 
-   But the base text has specific colors. 
-   I will let the base text color shine through or be overridden?
-   User said "don't make text glitch but background will be glitch".
-   The pseudo elements have background: black. 
-   So they will cover the text.
-   And they have text-shadow.
-   So the visible text will be the pseudo-elements mostly?
-   Or the clip-path reveals the underlying text?
-   clip-path: inset(...) cuts the element.
-   So the pseudo-element is mostly invisible (clipped out), revealing the base text.
-   Where it is NOT clipped, it shows black background + colored text shadow.
-   This creates the "glitch" effect on top of the base text.
-   Correct.
-*/
+.text-git { color: #FF1744; }
+.text-real { color: #00FFFF; }
 
 .pill-zone {
   position: absolute;
@@ -182,7 +158,6 @@ body {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* RED PILL (User's LEFT / Morpheus' Right Hand) */
 .pill-red {
   top: 77%; 
   left: 12%;
@@ -194,7 +169,6 @@ body {
   transform: scale(1.05);
 }
 
-/* BLUE PILL (User's RIGHT / Morpheus' Left Hand) */
 .pill-blue {
   top: 77%; 
   right: 11%;
@@ -228,10 +202,6 @@ body {
   opacity: 1;
 }
 
-@keyframes fadeInText {
-  to { opacity: 1; }
-}
-
 /* Cursor Blink */
 .cursor-blink {
   animation: blink 1s step-end infinite;
@@ -241,58 +211,13 @@ body {
   50% { opacity: 0; }
 }
 
-/* Glitch Text Effect */
-.glitch {
-  position: relative;
+/* Helper for fade in */
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-in forwards;
 }
-.glitch::before,
-.glitch::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-.glitch::before {
-  left: 2px;
-  text-shadow: -1px 0 var(--neon-red);
-  clip: rect(44px, 450px, 56px, 0);
-  animation: glitch-anim 5s infinite linear alternate-reverse;
-}
-.glitch::after {
-  left: -2px;
-  text-shadow: -1px 0 var(--neon-green);
-  clip: rect(44px, 450px, 56px, 0);
-  animation: glitch-anim2 5s infinite linear alternate-reverse;
-}
-
-@keyframes glitch-anim {
-  0% { clip: rect(42px, 9999px, 44px, 0); }
-  5% { clip: rect(12px, 9999px, 59px, 0); }
-  10% { clip: rect(48px, 9999px, 29px, 0); }
-  15% { clip: rect(42px, 9999px, 73px, 0); }
-  20% { clip: rect(63px, 9999px, 27px, 0); }
-  25% { clip: rect(34px, 9999px, 55px, 0); }
-  30% { clip: rect(86px, 9999px, 73px, 0); }
-  35% { clip: rect(20px, 9999px, 20px, 0); }
-  40% { clip: rect(26px, 9999px, 60px, 0); }
-  45% { clip: rect(25px, 9999px, 66px, 0); }
-  50% { clip: rect(57px, 9999px, 98px, 0); }
-  55% { clip: rect(5px, 9999px, 46px, 0); }
-  60% { clip: rect(82px, 9999px, 31px, 0); }
-  65% { clip: rect(54px, 9999px, 27px, 0); }
-  70% { clip: rect(28px, 9999px, 99px, 0); }
-  75% { clip: rect(45px, 9999px, 69px, 0); }
-  80% { clip: rect(23px, 9999px, 85px, 0); }
-  85% { clip: rect(54px, 9999px, 84px, 0); }
-  90% { clip: rect(45px, 9999px, 47px, 0); }
-  95% { clip: rect(37px, 9999px, 20px, 0); }
-  100% { clip: rect(4px, 9999px, 91px, 0); }
-}
-@keyframes glitch-anim2 {
-  0% { clip: rect(65px, 9999px, 100px, 0); }
-  100% { clip: rect(0px, 9999px, 30px, 0); }
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 `;
 
@@ -302,17 +227,15 @@ const Typewriter = ({ text, speed = 50, onComplete }: { text: string, speed?: nu
   const [displayText, setDisplayText] = useState('');
   const onCompleteRef = useRef(onComplete);
 
-  // Update ref when onComplete changes to avoid re-triggering effect
   useEffect(() => {
     onCompleteRef.current = onComplete;
   }, [onComplete]);
 
   useEffect(() => {
-    setDisplayText(''); // Clear text on start
+    setDisplayText(''); 
     let index = 0;
 
     const interval = setInterval(() => {
-      // Use slice to ensure we don't duplicate text on re-renders
       index++;
       setDisplayText(text.slice(0, index));
 
@@ -328,7 +251,6 @@ const Typewriter = ({ text, speed = 50, onComplete }: { text: string, speed?: nu
   return (
     <span>
       {displayText}
-      {/* Updated Cursor: Larger height and width to match 6xl text */}
       <span
         className="cursor-blink inline-block bg-[#00FF41] ml-1 align-middle mb-2"
         style={{ width: '12px', height: '40px', display: 'inline-block' }}
@@ -337,7 +259,7 @@ const Typewriter = ({ text, speed = 50, onComplete }: { text: string, speed?: nu
   );
 };
 
-// --- VIEW 1: UPLOAD LANDING (Typewriter + Upload) ---
+// --- VIEW 1: UPLOAD LANDING ---
 const UploadLanding = ({ onUploadComplete }: { onUploadComplete: (file: File) => void }) => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -346,7 +268,6 @@ const UploadLanding = ({ onUploadComplete }: { onUploadComplete: (file: File) =>
   const handleSubmit = () => {
     if (!file) return;
     setLoading(true);
-    // Simulate upload/processing
     setTimeout(() => {
       setLoading(false);
       onUploadComplete(file);
@@ -401,11 +322,8 @@ const UploadLanding = ({ onUploadComplete }: { onUploadComplete: (file: File) =>
             SYSTEM VERSION 4.2.4 // UNAUTHORIZED ACCESS DETECTED
           </div>
         </>
-      )
-      }
-
-
-    </div >
+      )}
+    </div>
   );
 };
 
@@ -424,17 +342,12 @@ const MorpheusChoice = ({ onNavigate }: { onNavigate: (view: string) => void }) 
           className="w-full h-auto object-contain opacity-90 drop-shadow-[0_0_30px_rgba(0,255,65,0.3)]"
         />
 
-        {/* Glasses Text with Premium Glitch */}
         <div className="glasses-text">
           <span className="text-git glitch" data-text="GIT">GIT</span>
           <span className="text-real glitch" data-text="REAL">REAL</span>
         </div>
 
-        {/* Red Pill (Roast) */}
-        <div
-          className="pill-zone pill-red"
-          onClick={() => onNavigate('dashboard')}
-        >
+        <div className="pill-zone pill-red" onClick={() => onNavigate('dashboard')}>
           <div className="tooltip text-red-500 border-red-500 shadow-[0_0_20px_red]">
             [ ROAST ME ]
             <br />
@@ -442,21 +355,13 @@ const MorpheusChoice = ({ onNavigate }: { onNavigate: (view: string) => void }) 
           </div>
         </div>
 
-        {/* Blue Pill (Rewrite) */}
-        <div
-          className="pill-zone pill-blue"
-          onClick={() => onNavigate('chat')}
-        >
+        <div className="pill-zone pill-blue" onClick={() => onNavigate('chat')}>
           <div className="tooltip text-cyan-400 border-cyan-400 shadow-[0_0_20px_cyan]">
             [ REWRITE ME ]
             <br />
             <span className="text-[10px] text-gray-400">Upgrade your career</span>
           </div>
         </div>
-      </div>
-
-      <div className="mt-8 font-mono text-xs text-green-900">
-        WAITING FOR INPUT...
       </div>
     </div>
   );
@@ -470,7 +375,6 @@ const Dashboard = ({ onNavigate, uploadedFile }: { onNavigate: (view: string) =>
   useEffect(() => {
     const fetchData = async () => {
       if (!uploadedFile) {
-        // Fallback mock data if no file (shouldn't happen in flow)
         setData({
           matches: ["Verified Python skills", "React expertise confirmed"],
           red_flags: ["Claimed 'Expert' but code is basic"],
@@ -482,25 +386,17 @@ const Dashboard = ({ onNavigate, uploadedFile }: { onNavigate: (view: string) =>
       setLoading(true);
       const formData = new FormData();
       formData.append("file", uploadedFile);
-      // No github_url needed, backend extracts it
 
       try {
         const res = await axios.post("http://localhost:8000/analyze", formData);
-        // The backend returns { status: "success", data: { ... } }
-        // The inner data is ALREADY a dict, not a string, based on main.py:70
-        // But wait, main.py says: analysis_json = brain.analyze_resume_vs_code(...)
-        // If brain.py returns a dict, then res.data.data is a dict.
-        // If brain.py returns a string, then we might need parsing.
-        // Let's assume it returns a dict for now, but handle string just in case.
         const responseData = res.data.data;
         setData(typeof responseData === 'string' ? JSON.parse(responseData) : responseData);
       } catch (e) {
         console.error(e);
-        // Fallback to mock data on error for demo purposes
         setData({
-          matches: ["Verified Python skills", "React expertise confirmed"],
-          red_flags: ["Claimed 'Expert' but code is basic"],
-          missing_gems: ["Docker skills not mentioned"]
+          matches: [],
+          red_flags: ["Analysis Failed"],
+          missing_gems: []
         });
       } finally {
         setLoading(false);
@@ -533,8 +429,6 @@ const Dashboard = ({ onNavigate, uploadedFile }: { onNavigate: (view: string) =>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-
-        {/* Critique */}
         <div className="bg-black border border-[#00FF41] p-6 shadow-[0_0_15px_rgba(0,255,65,0.1)]">
           <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-[#00FF41]">
             <AlertTriangle className="w-5 h-5" /> REAL WORLD CRITIQUE
@@ -546,7 +440,6 @@ const Dashboard = ({ onNavigate, uploadedFile }: { onNavigate: (view: string) =>
           </ul>
         </div>
 
-        {/* False Claims */}
         <div className="bg-black border border-red-600 p-6 shadow-[0_0_15px_rgba(255,50,50,0.1)]">
           <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-red-500 glitch" data-text="LIES DETECTED">
             <ShieldAlert className="w-5 h-5" /> FALSE CLAIMS
@@ -558,7 +451,6 @@ const Dashboard = ({ onNavigate, uploadedFile }: { onNavigate: (view: string) =>
           </ul>
         </div>
 
-        {/* Suggestions */}
         <div className="bg-black border border-yellow-400 p-6 shadow-[0_0_15px_rgba(255,255,50,0.1)]">
           <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-yellow-400">
             <CheckCircle className="w-5 h-5" /> RESUME ADDITIONS
@@ -569,11 +461,9 @@ const Dashboard = ({ onNavigate, uploadedFile }: { onNavigate: (view: string) =>
             )) || <li>No suggestions.</li>}
           </ul>
         </div>
-
       </div>
 
       <div className="flex justify-center gap-6 mt-8">
-        {/* The Rewrite Button (Blue Pill) */}
         <button
           onClick={() => onNavigate('chat')}
           className="relative px-8 py-4 bg-transparent border border-cyan-500 text-cyan-500 font-bold text-lg hover:bg-cyan-500 hover:text-black transition-all duration-200 shadow-[0_0_20px_rgba(0,255,255,0.2)] flex items-center gap-2"
@@ -582,34 +472,23 @@ const Dashboard = ({ onNavigate, uploadedFile }: { onNavigate: (view: string) =>
           REWRITE RESUME
         </button>
 
-        {/* The DEFENSE MODE Button (Red Pill Logic) */}
         <button
           onClick={async () => {
-            console.log("🔴 Defense Mode Clicked");
             try {
-              // Set loading state
               localStorage.setItem('interview_loading', 'true');
-              onNavigate('interview'); // Navigate immediately to show loading
-
+              onNavigate('interview');
               const res = await axios.post("http://localhost:8000/interview_start");
-              console.log("🔴 Backend Response:", res.data);
-
               if (res.data.status === 'error') {
                 localStorage.removeItem('interview_loading');
-                alert("Error: " + res.data.message + "\nPlease upload your resume again.");
+                alert("Error: " + res.data.message);
                 onNavigate('dashboard');
                 return;
               }
-
               localStorage.setItem('interview_intro', res.data.question);
               localStorage.removeItem('interview_loading');
-              console.log("🔴 Question loaded");
-              // Trigger a re-render by updating a dummy state or just let the useEffect handle it
               window.dispatchEvent(new Event('storage'));
             } catch (e) {
-              console.error("🔴 Defense Mode Error:", e);
               localStorage.removeItem('interview_loading');
-              alert("Backend Offline or Connection Failed");
               onNavigate('dashboard');
             }
           }}
@@ -629,8 +508,8 @@ const ChatInterface = ({ onNavigate, uploadedFile, mode }: { onNavigate: (view: 
   const [input, setInput] = useState('');
   const [initialized, setInitialized] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [generatedResume, setGeneratedResume] = useState<string>("");
 
-  // Repo Input State
   const [showRepoInput, setShowRepoInput] = useState(false);
   const [newRepoUrl, setNewRepoUrl] = useState("");
   const [repoLoading, setRepoLoading] = useState(false);
@@ -641,28 +520,24 @@ const ChatInterface = ({ onNavigate, uploadedFile, mode }: { onNavigate: (view: 
   const previousMode = useRef(mode);
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
-  // Check for interview loading
   useEffect(() => {
     const loading = typeof window !== 'undefined' ? localStorage.getItem('interview_loading') : null;
     setIsInterviewLoading(loading === 'true');
   }, [messages]);
 
-  // Reset when mode changes (but not on initial mount)
   useEffect(() => {
     if (previousMode.current !== mode) {
-      // Clear messages when switching modes
       setMessages([]);
       setInitialized(false);
       interviewInitialized.current = false;
       previousMode.current = mode;
+      setGeneratedResume("");
     }
   }, [mode]);
 
-  // Check for Interview Mode question on load
   useEffect(() => {
     const interviewQuestion = typeof window !== 'undefined' ? localStorage.getItem('interview_intro') : null;
     if (interviewQuestion && !interviewInitialized.current) {
-      // INTERVIEW MODE - Don't call handleInit
       interviewInitialized.current = true;
       setInitialized(true);
       setMessages([
@@ -671,12 +546,10 @@ const ChatInterface = ({ onNavigate, uploadedFile, mode }: { onNavigate: (view: 
       ]);
       localStorage.removeItem('interview_intro');
     } else if (uploadedFile && !initialized && !interviewQuestion && mode === 'chat') {
-      // CHAT MODE ONLY - Initialize with file
       handleInit(uploadedFile, "");
     }
   }, [uploadedFile, mode]);
 
-  // Listen for storage events (when interview question is loaded)
   useEffect(() => {
     const handleStorageChange = () => {
       const interviewQuestion = localStorage.getItem('interview_intro');
@@ -691,7 +564,6 @@ const ChatInterface = ({ onNavigate, uploadedFile, mode }: { onNavigate: (view: 
         localStorage.removeItem('interview_loading');
       }
     };
-
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [mode]);
@@ -714,7 +586,6 @@ const ChatInterface = ({ onNavigate, uploadedFile, mode }: { onNavigate: (view: 
         { id: 3, type: 'ai', text: starAnalysis }
       ]);
     } catch (e: any) {
-      // alert(`Init Failed: ${e.message}`);
       setMessages(prev => [...prev, { id: 3, type: 'system', text: `❌ ERROR: ${e.message}` }]);
     } finally {
       setLoading(false);
@@ -739,13 +610,11 @@ const ChatInterface = ({ onNavigate, uploadedFile, mode }: { onNavigate: (view: 
       const aiResponse = res.data.response;
       const aiMsg = { id: Date.now() + 1, type: 'ai', text: aiResponse };
       setMessages(prev => [...prev, aiMsg]);
-
     } catch (e) {
       setMessages(prev => [...prev, { id: Date.now(), type: 'system', text: 'CONNECTION DROPPED. RETRY.' }]);
     }
   };
 
-  // Add Repo Logic (Kept same)
   const handleAddRepo = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newRepoUrl) return;
@@ -766,7 +635,6 @@ const ChatInterface = ({ onNavigate, uploadedFile, mode }: { onNavigate: (view: 
     }
   }
 
-  // --- COMPILE ATS RESUME ---
   const handleCompile = async () => {
     setMessages(prev => [...prev, { id: Date.now(), type: 'user', text: "COMPILE FINAL ATS DRAFT" }]);
     setMessages(prev => [...prev, { id: Date.now() + 1, type: 'system', text: "COMPILING DATA STREAMS... PLEASE WAIT..." }]);
@@ -774,12 +642,11 @@ const ChatInterface = ({ onNavigate, uploadedFile, mode }: { onNavigate: (view: 
     try {
       const res = await axios.post("http://localhost:8000/generate_resume");
       const resumeText = res.data.resume;
-
+      setGeneratedResume(resumeText);
       setMessages(prev => [...prev, {
         id: Date.now() + 2,
-        type: 'ai',
-        isResume: true, // Special Flag
-        text: resumeText
+        type: 'system',
+        text: "✅ UPLINK SUCCESSFUL. RESUME RENDERED ON MAIN SCREEN."
       }]);
     } catch (e) {
       setMessages(prev => [...prev, { id: Date.now() + 3, type: 'system', text: "COMPILATION FAILED." }]);
@@ -787,62 +654,56 @@ const ChatInterface = ({ onNavigate, uploadedFile, mode }: { onNavigate: (view: 
   };
 
   return (
-    <div className="h-screen p-4 md:p-8 flex flex-col md:flex-row gap-6 relative z-20">
+    // Note: REMOVED z-20 here to avoid trapping children in a low stack
+    <div className="h-screen p-4 md:p-8 flex flex-col md:flex-row gap-6 relative">
 
-      {/* Left: Resume Preview (Mock) - Kept for visual balance */}
-      <div className="w-full md:w-1/2 bg-[#0a0a0a] border border-[#003300] flex flex-col relative overflow-hidden hidden md:flex">
-        <div className="absolute top-0 left-0 w-full h-1 bg-[#00FF41]/50"></div>
-        <div className="bg-[#0f0f0f] p-3 border-b border-[#003300] flex justify-between items-center">
-          <span className="text-xs text-gray-500 font-mono">RESUME_V1_FINAL_REAL.PDF</span>
+      {/* Left: Resume Preview / Generated CV Area */}
+      {/* Dynamic Background: White if resume generated, Black/Matrix if not */}
+      {/* KEY FIX: z-[60] allows this container to sit ON TOP of the fixed z-50 scanlines */}
+      <div className={`w-full md:w-1/2 border border-[#003300] flex flex-col relative overflow-hidden hidden md:flex transition-colors duration-500 ${generatedResume ? 'bg-white z-[60]' : 'bg-[#0a0a0a] z-10'}`}>
+        
+        {/* Header Bar */}
+        <div className={`${generatedResume ? 'bg-gray-100 border-gray-300' : 'bg-[#0f0f0f] border-[#003300]'} p-3 border-b flex justify-between items-center transition-colors`}>
+          <span className={`text-xs font-mono ${generatedResume ? 'text-gray-600' : 'text-gray-500'}`}>
+            {generatedResume ? 'ATS_OPTIMIZED_VERSION_V2.PDF' : 'RESUME_V1_FINAL_REAL.PDF'}
+          </span>
           <div className="flex gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-900/50"></div>
-            <div className="w-3 h-3 rounded-full bg-yellow-900/50"></div>
-            <div className="w-3 h-3 rounded-full bg-green-900/50"></div>
+            <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
+            <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+            <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
           </div>
         </div>
-        <div className="p-8 opacity-60 text-[10px] leading-relaxed font-sans text-gray-400 select-none overflow-y-auto custom-scrollbar">
+        
+        {/* Content Area */}
+        <div className={`flex-1 overflow-y-auto custom-scrollbar relative ${generatedResume ? 'p-0' : 'p-8 opacity-90'}`}>
+          
           {isInterviewLoading ? (
-            // LOADING ANIMATION FOR INTERVIEW
-            <div className="flex flex-col items-center justify-center h-full">
+            <div className="flex flex-col items-center justify-center h-full p-8">
               <div className="text-[#00FF41] text-center space-y-6">
                 <div className="text-2xl font-bold animate-pulse">ANALYZING CODE...</div>
                 <div className="text-sm opacity-70">GENERATING INTERROGATION PROTOCOL</div>
-
-                {/* Matrix Rain Effect */}
                 <div className="relative w-full h-64 overflow-hidden border border-[#00FF41]/30">
                   {[...Array(20)].map((_, i) => (
                     <div
                       key={i}
                       className="absolute top-0 text-[#00FF41] text-xs font-mono opacity-30 animate-[fall_2s_linear_infinite]"
-                      style={{
-                        left: `${i * 5}%`,
-                        animationDelay: `${i * 0.1}s`
-                      }}
+                      style={{ left: `${i * 5}%`, animationDelay: `${i * 0.1}s` }}
                     >
                       {Array.from({ length: 20 }, () => String.fromCharCode(33 + Math.random() * 94)).join('\n')}
                     </div>
                   ))}
                 </div>
-
-                {/* Scanning Lines */}
-                <div className="w-full h-2 bg-[#001100] relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#00FF41] to-transparent animate-[scan_1.5s_linear_infinite]"></div>
-                </div>
               </div>
-              <style>{`
-                @keyframes fall {
-                  0% { transform: translateY(-100%); }
-                  100% { transform: translateY(400%); }
-                }
-                @keyframes scan {
-                  0% { transform: translateX(-100%); }
-                  100% { transform: translateX(100%); }
-                }
-              `}</style>
+            </div>
+          ) : generatedResume ? (
+            // --- GENERATED RESUME (CLEAN WHITE PAPER) ---
+            // Text is black, background is white, font is standard sans/mono
+            <div className="w-full min-h-full p-12 bg-white text-black font-sans text-sm leading-relaxed whitespace-pre-wrap animate-fade-in shadow-none">
+                {generatedResume}
             </div>
           ) : (
-            // NORMAL RESUME PREVIEW
-            <>
+            // DEFAULT: MATRIX SKELETON PREVIEW
+            <div className="opacity-50 pointer-events-none text-[#00FF41] font-mono">
               <div className="w-full h-8 bg-[#1a1a1a] mb-6"></div>
               <div className="flex gap-4 mb-6">
                 <div className="w-1/3 h-64 bg-[#1a1a1a]"></div>
@@ -855,21 +716,19 @@ const ChatInterface = ({ onNavigate, uploadedFile, mode }: { onNavigate: (view: 
                 </div>
               </div>
               <div className="w-full h-40 bg-[#1a1a1a]"></div>
-            </>
+            </div>
           )}
         </div>
 
-        {/* Overlay scanning line */}
-        <div className="absolute inset-0 border-b-2 border-[#00FF41]/30 animate-[scan_3s_linear_infinite] pointer-events-none bg-gradient-to-b from-transparent to-[#00FF41]/5"></div>
-        <style>{`
-            @keyframes scan {
-                0% { transform: translateY(-100%); }
-                100% { transform: translateY(100%); }
-            }
-        `}</style>
+        {/* Overlay scanning line - ONLY show if resume is NOT generated */}
+        {!generatedResume && (
+           <div className="absolute inset-0 border-b-2 border-[#00FF41]/30 animate-[scan_3s_linear_infinite] pointer-events-none bg-gradient-to-b from-transparent to-[#00FF41]/5"></div>
+        )}
+        <style>{`@keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }`}</style>
       </div>
 
-      <div className="w-full md:w-1/2 flex flex-col border border-[#00FF41] bg-black/90 shadow-[0_0_30px_rgba(0,0,0,0.8)] relative">
+      {/* Right Side: Chat Interface (Remains Matrix Style) */}
+      <div className="w-full md:w-1/2 flex flex-col border border-[#00FF41] bg-black/90 shadow-[0_0_30px_rgba(0,0,0,0.8)] relative z-10">
 
         {/* REPO POPUP */}
         {showRepoInput && (
@@ -889,12 +748,7 @@ const ChatInterface = ({ onNavigate, uploadedFile, mode }: { onNavigate: (view: 
             <span className="text-sm font-bold tracking-widest">LIVE UPLINK</span>
           </div>
           <div className="flex gap-4">
-            <button
-              onClick={() => onNavigate('dashboard')}
-              className="text-xs hover:text-[#00FF41] transition-colors border border-transparent hover:border-[#00FF41] px-2 py-1"
-            >
-              [ VIEW DASHBOARD ]
-            </button>
+            <button onClick={() => onNavigate('dashboard')} className="text-xs hover:text-[#00FF41] transition-colors border border-transparent hover:border-[#00FF41] px-2 py-1">[ VIEW DASHBOARD ]</button>
             <button onClick={() => onNavigate('morpheus')} className="text-xs hover:text-white">[ EXIT TERMINAL ]</button>
           </div>
         </div>
@@ -902,14 +756,7 @@ const ChatInterface = ({ onNavigate, uploadedFile, mode }: { onNavigate: (view: 
         <div className="flex-1 p-6 overflow-y-auto space-y-4 font-mono text-sm custom-scrollbar">
           {messages.map((msg) => (
             <div key={msg.id} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[95%] p-4 ${msg.type === 'user'
-                ? 'border border-cyan-500 text-cyan-400 bg-cyan-950/20'
-                : msg.isResume
-                  ? 'bg-white text-black font-sans border-4 border-green-500 shadow-[0_0_30px_rgba(255,255,255,0.2)]' // RESUME PAPER STYLE
-                  : msg.type === 'system'
-                    ? 'border-none text-gray-500 italic text-xs w-full text-center'
-                    : 'border-[#00FF41] text-[#00FF41] bg-[#001100]'
-                }`}>
+              <div className={`max-w-[95%] p-4 ${msg.type === 'user' ? 'border border-cyan-500 text-cyan-400 bg-cyan-950/20' : msg.type === 'system' ? 'border-none text-gray-500 italic text-xs w-full text-center' : 'border-[#00FF41] text-[#00FF41] bg-[#001100]'}`}>
                 {!msg.isResume && (
                   <span className="font-bold opacity-50 mr-2 block mb-2">
                     {msg.type === 'user' ? '> USER' : msg.type === 'ai' ? '> GITREAL' : ''}
@@ -922,7 +769,6 @@ const ChatInterface = ({ onNavigate, uploadedFile, mode }: { onNavigate: (view: 
           <div ref={messagesEndRef} />
         </div>
 
-        {/* INPUT BAR */}
         <div className="p-4 border-t border-[#00FF41] bg-black">
           <div className="flex items-center gap-2 mb-2">
             <button onClick={() => setShowRepoInput(!showRepoInput)} className="text-xs text-gray-500 hover:text-cyan-400 flex items-center gap-1 border border-gray-800 hover:border-cyan-400 px-2 py-1 transition-all"><Code className="w-3 h-3" /> Add Repo</button>
@@ -930,18 +776,8 @@ const ChatInterface = ({ onNavigate, uploadedFile, mode }: { onNavigate: (view: 
           </div>
           <form onSubmit={(e) => handleSend(e)} className="flex gap-2 items-center">
             <ChevronRight className="w-5 h-5 text-[#00FF41]" />
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Type command..."
-              className="flex-1 bg-transparent border-none outline-none text-[#00FF41] placeholder-green-900 font-mono h-10"
-              autoFocus
-            />
-
-            <button type="submit" className="text-[#00FF41] hover:text-white">
-              <Send className="w-5 h-5" />
-            </button>
+            <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type command..." className="flex-1 bg-transparent border-none outline-none text-[#00FF41] placeholder-green-900 font-mono h-10" autoFocus />
+            <button type="submit" className="text-[#00FF41] hover:text-white"><Send className="w-5 h-5" /></button>
           </form>
         </div>
       </div>
@@ -971,9 +807,11 @@ export default function App() {
           backgroundSize: '40px 40px'
         }}>
       </div>
+      
+      {/* Scanlines: FIXED at z-50. Anything z > 50 will appear ON TOP of scanlines. */}
       {enableEffects && <div className="scanlines fixed inset-0 pointer-events-none z-50"></div>}
 
-      <div className="absolute top-4 right-4 z-50 flex gap-4 items-center">
+      <div className="absolute top-4 right-4 z-[100] flex gap-4 items-center">
         <button
           onClick={() => setEnableEffects(!enableEffects)}
           className="text-xs flex items-center gap-2 border border-[#003300] px-2 py-1 hover:border-[#00FF41] hover:text-[#00FF41] transition-colors text-[#003300]"
@@ -983,7 +821,8 @@ export default function App() {
         </button>
       </div>
 
-      <main className="relative z-10">
+      {/* KEY CHANGE: Removed z-10 from main to allow children to pop out to z-60 */}
+      <main className="relative">
         {currentView === 'landing' && <UploadLanding onUploadComplete={handleUploadComplete} />}
         {currentView === 'morpheus' && <MorpheusChoice onNavigate={setCurrentView} />}
         {currentView === 'dashboard' && <Dashboard onNavigate={setCurrentView} uploadedFile={uploadedFile} />}

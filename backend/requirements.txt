@@ -1,0 +1,21 @@
+# Core Web Framework
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+
+# AI/ML - Google Generative AI
+google-generativeai==0.8.3
+
+# PDF Processing
+pypdf==5.1.0
+
+# HTTP Requests
+requests==2.32.3
+
+# Environment Variables
+python-dotenv==1.0.1
+
+# Data Validation
+pydantic==2.10.3
+
+# File Upload Support
+python-multipart==0.0.20
